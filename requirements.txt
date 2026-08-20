@@ -1,4 +1,3 @@
-pyrogram==2.0.106
+pyrogram
 py-tgcalls
 yt-dlp
-
