@@ -3,7 +3,7 @@ import json
 import os
 from pyrogram import Client, filters
 from pytgcalls import PyTgCalls
-from pytgcalls.types import AudioPiped
+from pytgcalls.types import MediaStream
 from yt_dlp import YoutubeDL
 
 # --- अपनी डिटेल्स यहाँ भरें ---
@@ -55,9 +55,9 @@ async def play_command(_, message):
         queue_data[chat_id] = {"url": audio_url, "title": title}
         save_queue(queue_data)
 
-        await call_py.join_group_call(
+        await call_py.play(
             message.chat.id,
-            AudioPiped(audio_url)
+            MediaStream(audio_url)
         )
         await msg.edit(f"▶️ **प्ले हो रहा है:** `{title}`\n*(डेटा JSON में सुरक्षित है)*")
     except Exception as e:
@@ -83,7 +83,7 @@ async def resume_command(_, message):
 async def stop_command(_, message):
     chat_id = str(message.chat.id)
     try:
-        await call_py.leave_group_call(message.chat.id)
+        await call_py.leave_call(message.chat.id)
         
         queue_data = load_queue()
         if chat_id in queue_data:
@@ -103,7 +103,7 @@ async def start_bot():
     queue_data = load_queue()
     for chat_id, data in queue_data.items():
         try:
-            await call_py.join_group_call(int(chat_id), AudioPiped(data["url"]))
+            await call_py.play(int(chat_id), MediaStream(data["url"]))
             print(f"🔄 पुराना गाना रीस्टोर हुआ: {data['title']} (Chat: {chat_id})")
         except Exception as e:
             print(f"⚠️ चैट {chat_id} पर गाना रीस्टोर करने में समस्या: {e}")
